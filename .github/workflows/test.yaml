@@ -17,13 +17,8 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
-    - name: install ToFu
-      uses: opentofu/setup-opentofu@v1
-      
     - name: Run comprehensive test suite
       run: |
-        tofu --version
         ./glueops.sh
-        tofu --version
       timeout-minutes: 25
       
