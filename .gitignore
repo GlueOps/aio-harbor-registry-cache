@@ -1,2 +1,5 @@
 harbor/input/*
 harbor/harbor.yml
+harbor/common/*
+harbor/data/*
+harbor/docker-compose.yml
