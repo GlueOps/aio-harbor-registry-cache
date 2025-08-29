@@ -15,7 +15,8 @@ echo "apply things"
 tofu plan
 tofu apply -auto-approve
 cd ..
-
+docker ps -a
+ls -al
 
 docker pull localhost:80/proxy-docker-io/alpine:latest
 docker pull localhost:80/proxy-docker-io/nginx/nginx-ingress:latest
