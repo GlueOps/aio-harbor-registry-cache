@@ -2,22 +2,22 @@
 
 # The IP address or hostname to access admin UI and registry service.
 # DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.
-hostname: reg.mydomain.com
+hostname: $HARBOR_HOSTNAME
 
 # http related config
 http:
   # port for http, default is 80. If https enabled, this port will redirect to https port
-  port: 80
+  port: 8080
 
 # https related config
 https:
   # https port for harbor, default is 443
-  port: 443
+  port: 8443
   # The path of cert and key files for nginx
-  certificate: /your/certificate/path
-  private_key: /your/private/key/path
+  certificate: $HARBOR_NGINX_CERT_LOCATION
+  private_key: $HARBOR_NGINX_KEY_LOCATION
   # enable strong ssl ciphers (default: false)
-  # strong_ssl_ciphers: false
+  strong_ssl_ciphers: true
 
 # # Harbor will set ipv4 enabled only by default if this block is not configured
 # # Otherwise, please uncomment this block to configure your own ip_family stacks
@@ -44,7 +44,7 @@ https:
 # The initial password of Harbor admin
 # It only works in first time to install harbor
 # Remember Change the admin password from UI after launching Harbor.
-harbor_admin_password: Harbor12345
+harbor_admin_password: $HARBOR_ADMIN_PASSWORD
 
 # Harbor DB configuration
 database:
@@ -63,7 +63,7 @@ database:
   conn_max_idle_time: 0
 
 # The default data volume
-data_volume: /data
+data_volume: $HARBOR_DATA_VOLUME_PATH
 
 # Harbor Storage settings by default is using /data dir on local filesystem
 # Uncomment storage_service setting If you want to using external storage

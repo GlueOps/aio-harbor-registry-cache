@@ -1,0 +1,5 @@
+project:
+  name: aio-harbor-registry-cache
+  tz: Africa/Abidjan
+  adrFolder: ./docs/adr
+  packages: []

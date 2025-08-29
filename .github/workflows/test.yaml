@@ -1,0 +1,26 @@
+name: Registry Facade Tests
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+     - cron: "0 * * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Run comprehensive test suite
+      run: |
+        ./setup.sh --env=github
+        ./test-image-pulls.sh
+      timeout-minutes: 25
+      
