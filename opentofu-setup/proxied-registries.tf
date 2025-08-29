@@ -39,18 +39,6 @@ module "ghcr_proxy" {
   admin_group_name      = local.admin_group_name
 }
 
-# --- NVIDIA NGC Proxy Cache ---
-module "nvcr_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name = "proxy-nvcr-io"
-  # Note: Harbor uses the 'docker-hub' provider for NVCR as it's a compatible API
-  registry_provider     = "docker-hub"
-  registry_endpoint_url = "https://nvcr.io"
-  admin_group_name      = local.admin_group_name
-}
-
-
 # --- Amazon ECR Public Proxy Cache ---
 module "ecr_public_proxy" {
   source = "./modules/proxy-project"
