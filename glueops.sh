@@ -10,6 +10,9 @@ cd ../opentofu-setup
 tofu init
 sleep 10;
 docker ps -a
+docker ps -a
+docker ps -a
+
 tofu plan
 echo "apply things"
 tofu plan
