@@ -15,6 +15,7 @@ docker ps -a
 
 tofu plan
 echo "apply things"
+export TF_LOG=TRACE
 tofu plan
 tofu apply -auto-approve
 cd ..
