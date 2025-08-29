@@ -1,0 +1,29 @@
+name: Registry Facade Tests
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Verify Docker Compose
+      run: |
+        # Check if docker compose works (Docker Compose V2)
+        if docker compose version >/dev/null 2>&1; then
+          echo "Docker Compose V2 is available"
+      
+    - name: Run comprehensive test suite
+      run: |
+        ./glueops.sh
+      timeout-minutes: 25
+      

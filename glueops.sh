@@ -2,14 +2,15 @@
 cd harbor
 docker compose down
 docker system prune -a -f
-git clean -xdf
+sudo git clean -xdf
 source .env
 cat harbor.yml.tmpl | envsubst > harbor.yml
 sudo ./install.sh
 cd ../opentofu-setup
 tofu init
+sleep 10;
 tofu plan
-tofu apply
+tofu apply --auto-aprove
 
 
 
