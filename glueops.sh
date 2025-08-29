@@ -9,7 +9,9 @@ sudo ./install.sh
 cd ../opentofu-setup
 tofu init
 sleep 10;
+docker ps -a
 tofu plan
+echo "apply things"
 tofu apply -auto-approve
 cd ..
 
