@@ -19,6 +19,6 @@ jobs:
       
     - name: Run comprehensive test suite
       run: |
-        ./glueops.sh
+        ./glueops-test.sh
       timeout-minutes: 25
       
