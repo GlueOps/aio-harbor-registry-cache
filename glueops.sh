@@ -6,3 +6,7 @@ git clean -xdf
 source .env
 cat harbor.yml.tmpl | envsubst > harbor.yml
 sudo ./install.sh
+cd ../opentofu-setup
+tofu init
+tofu plan
+tofu apply
