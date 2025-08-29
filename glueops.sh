@@ -12,6 +12,7 @@ sleep 10;
 docker ps -a
 tofu plan
 echo "apply things"
+tofu plan
 tofu apply -auto-approve
 cd ..
 
