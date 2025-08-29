@@ -7,20 +7,19 @@ source .env
 cat harbor.yml.tmpl | envsubst > harbor.yml
 sudo ./install.sh
 cd ../opentofu-setup
-tofu init
-sleep 10;
+TOFU_VERSION="1.10.5"
+echo "Downloading OpenTofu v${TOFU_VERSION} to the current directory..."
+curl -s -Lo tofu.zip "https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}/tofu_${TOFU_VERSION}_linux_amd64.zip"
+unzip -p tofu.zip tofu > tofu
+chmod +x tofu
+sleep 10s
+source .env
+./tofu --version
+./tofu init
+rm tofu.zip
+./tofu plan
+./tofu apply -auto-approve
 docker ps -a
-docker ps -a
-docker ps -a
-
-tofu plan
-echo "apply things"
-export TF_LOG=TRACE
-tofu plan
-tofu apply -auto-approve
-cd ..
-docker ps -a
-ls -al
 
 docker pull localhost:80/proxy-docker-io/alpine:latest
 docker pull localhost:80/proxy-docker-io/nginx/nginx-ingress:latest
