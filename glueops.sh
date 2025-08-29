@@ -10,7 +10,7 @@ cd ../opentofu-setup
 tofu init
 sleep 10;
 tofu plan
-tofu apply --auto-aprove
+tofu apply -auto-aprove
 
 
 
