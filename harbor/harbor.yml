@@ -2,7 +2,7 @@
 
 # The IP address or hostname to access admin UI and registry service.
 # DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.
-hostname: $HARBOR_HOSTNAME
+hostname: example.com
 
 # http related config
 http:
@@ -10,9 +10,9 @@ http:
   port: 80
 
 # https related config
-https:
+# https:
   # https port for harbor, default is 443
-  port: 443
+  # port: 443
   # The path of cert and key files for nginx
   # certificate: /your/certificate/path
   # private_key: /your/private/key/path
@@ -63,7 +63,7 @@ database:
   conn_max_idle_time: 0
 
 # The default data volume
-data_volume: $HARBOR_DATA_VOLUME_PATH
+data_volume: /workspaces/glueops/aio-harbor-registry-cache/harbor/data
 
 # Harbor Storage settings by default is using /data dir on local filesystem
 # Uncomment storage_service setting If you want to using external storage
