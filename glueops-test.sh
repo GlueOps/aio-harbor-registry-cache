@@ -1,8 +1,24 @@
 #!/usr/bin/env bash
+set -e
+
 cd harbor
 docker compose down
 docker system prune -a -f
 sudo git clean -xdf
+echo "create certs locally for testing"
+
+openssl req \
+    -x509 \
+    -nodes \
+    -newkey rsa:2048 \
+    -keyout "key.pem" \
+    -out "cert.pem" \
+    -days 3650 \
+    -subj "/CN=localhost" \
+    -addext "subjectAltName = DNS:localhost,IP:127.0.0.1"
+
+echo "Success! Created key.pem and cert.pem for localhost."
+
 source .env
 cat harbor.yml.tmpl | envsubst > harbor.yml
 sudo ./install.sh
