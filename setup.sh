@@ -76,10 +76,12 @@ elif [ -n "$ENV_NAME" ]; then
     CONFIG_FILE="${CONFIG_DIR}/${ENV_NAME}.env"
     echo "Using predefined environment: $ENV_NAME"
 else
-    # Default to local environment
-    ENV_NAME="$DEFAULT_ENV"
-    CONFIG_FILE="${CONFIG_DIR}/${ENV_NAME}.env"
-    echo "Using default environment: $ENV_NAME"
+    echo ""
+    echo "Error! No environment set!"
+    echo ""
+    echo ""
+    ./setup.sh --help
+    exit 1;
 fi
 
 # Validate configuration file exists
