@@ -9,6 +9,8 @@ images=(
     # "localhost:80/istio-release/base:1.25-2025-08-28T19-03-14"
     "localhost:80/proxy-ghcr-io/argoproj/argocd:latest"
     "localhost:80/proxy-public-ecr-aws/nginx/nginx:latest"
+    "localhost:80/proxy-mcr-microsoft-com/vscode/devcontainers/base:1-ubuntu-22"
+
 )
 
 echo "Testing registry proxy functionality..."
