@@ -206,6 +206,18 @@ echo "  Core Hostname: ${TF_VAR_harbor_core_hostname:-N/A}"
 ./tofu apply -auto-approve
 docker ps -a
 
+cd ..
+
+NGINX_MODE=${$NGINX_MODE,,}
+echo "Running NGINX in $NGINX_MODE mode"
+docker run -d \
+--name nginx-simple-redirect \
+-p 80:80 \
+-p 443:443 \
+-v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
+-v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro \
+-v $(pwd)/nginx-$NGINX_MODE.conf:/etc/nginx/conf.d/default.conf:ro \
+nginx:alpine
 
 
 echo ""
