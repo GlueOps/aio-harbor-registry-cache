@@ -2,7 +2,7 @@
 set -e
 
 #stop all containers except for codespace (this helps for local dev cycles)
-ID_TO_KEEP=$(docker ps -a -q --filter name="^/codespace$")
+ID_TO_KEEP=$(docker ps -a -q --filter name="^/codespace$" || test)
 IDS_TO_STOP=$(docker ps -a -q | grep -v "${ID_TO_KEEP}")
 if [ -n "$IDS_TO_STOP" ]; then
   docker stop $IDS_TO_STOP
