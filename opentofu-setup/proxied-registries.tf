@@ -42,8 +42,8 @@ module "ghcr_proxy" {
 module "ecr_public_proxy" {
   source = "./modules/proxy-project"
 
-  project_name      = "proxy-public-ecr-aws"
-  registry_provider = var.harbor_registry_mode == "REPLICA" ? "harbor" : "docker-registry"
+  project_name          = "proxy-public-ecr-aws"
+  registry_provider     = var.harbor_registry_mode == "REPLICA" ? "harbor" : "docker-registry"
   registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-public-ecr-aws" : "https://public.ecr.aws"
-  admin_group_name  = local.admin_group_name
+  admin_group_name      = local.admin_group_name
 }

@@ -6,3 +6,7 @@ terraform {
     }
   }
 }
+
+provider "harbor" {
+  username = "admin"
+}

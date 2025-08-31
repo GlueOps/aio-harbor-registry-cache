@@ -130,10 +130,11 @@ fi
 cd harbor
 docker compose down || true
 docker system prune -a -f
+rm -rf data/
 docker ps -a
 sudo chown -R $(whoami) .
 git clean -xdf
-git clean -xdf
+
 
 # Certificate handling
 if [ "${CREATE_LOCAL_CERTS}" = "true" ]; then
