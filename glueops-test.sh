@@ -190,7 +190,6 @@ echo "  OIDC Client ID: ${TF_VAR_GOOGLE_OIDC_CLIENT_ID:-Not set}"
 
 ./tofu --version
 ./tofu init
-rm tofu.zip
 ./tofu plan
 ./tofu apply -auto-approve
 docker ps -a
