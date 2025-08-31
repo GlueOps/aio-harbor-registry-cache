@@ -208,7 +208,7 @@ docker ps -a
 
 cd ..
 
-NGINX_MODE=${$NGINX_MODE,,}
+NGINX_MODE=${NGINX_MODE,,}
 echo "Running NGINX in $NGINX_MODE mode"
 docker run -d \
 --name nginx-simple-redirect \
