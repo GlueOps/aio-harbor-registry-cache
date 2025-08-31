@@ -8,7 +8,7 @@ sleep 5;
 #stop all containers except for codespace (this helps for local dev cycles)
 cd harbor
 sudo docker-compose down || true
-sudo docker stop nginx-simple-redirect || true
+sudo docker stop nginx-redirect || true
 cd ..
 docker system prune -a -f
 sudo git clean -xdf

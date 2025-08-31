@@ -211,7 +211,7 @@ cd ..
 NGINX_MODE=${NGINX_MODE,,}
 echo "Running NGINX in $NGINX_MODE mode"
 docker run -d \
---name nginx-simple-redirect \
+--name nginx-redirect \
 -p 80:80 \
 -p 443:443 \
 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
