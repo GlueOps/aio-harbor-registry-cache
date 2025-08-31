@@ -216,8 +216,9 @@ docker run -d \
 -p 443:443 \
 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
 -v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro \
--v $(pwd)/nginx-$NGINX_MODE.conf:/etc/nginx/conf.d/default.conf:ro \
-nginx:alpine
+-v $(pwd)/nginx-base.conf:/etc/nginx/nginx-base.conf:ro \
+-v $(pwd)/nginx-$NGINX_MODE-consolidated.conf:/etc/nginx/conf.d/default.conf:ro \
+nginx:mainline-alpine
 
 
 echo ""
