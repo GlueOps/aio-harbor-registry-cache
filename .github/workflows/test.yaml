@@ -20,6 +20,6 @@ jobs:
       
     - name: Run comprehensive test suite
       run: |
-        ./glueops-test.sh
+        ./glueops-test.sh --env=github
       timeout-minutes: 25
       

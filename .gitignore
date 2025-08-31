@@ -3,7 +3,7 @@ harbor/harbor.yml
 harbor/common/*
 harbor/data/*
 harbor/docker-compose.yml
-
+data/*
 
 # Local .terraform directories
 .terraform/
@@ -50,10 +50,20 @@ terraform.rc
 # Uncomment the line below if you want to ignore planout files.
 # planout
 
-
+# Environment configurations
+config/*.env
+!config/local.env
+!config/github.env
+!config/common.env
 
 #opentofu-setup
 opentofu-setup/README.md
 opentofu-setup/CHANGELOG.md
 opentofu-setup/LICENSE
 opentofu-setup/tofu
+
+
+
+# ignore all certs
+cert.pem
+key.pem
