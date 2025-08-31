@@ -24,10 +24,10 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
 
-- git and zip installed:
+- git, zip, and unzip installed:
 ```bash
 sudo apt update -y
-sudo apt install -y git zip
+sudo apt install -y git zip unzip
 ```
 - clone this repo:
 ```bash
