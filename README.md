@@ -22,16 +22,10 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
-```
-
-- git, zip, and unzip installed:
-```bash
 sudo apt update -y
 sudo apt install -y git zip unzip
-```
-- clone this repo:
-```bash
 git clone https://github.com/GlueOps/aio-harbor-registry-cache.git
+cd aio-harbor-registry-cache
 ```
 
 ## Usage
