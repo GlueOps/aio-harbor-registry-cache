@@ -4,7 +4,6 @@ set -e
 # Script configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${SCRIPT_DIR}/config"
-DEFAULT_ENV="local"
 
 # Function to display usage
 usage() {
@@ -16,7 +15,6 @@ usage() {
     echo "  --help               Show this help message"
     echo ""
     echo "Examples:"
-    echo "  $0                                  # Use default local environment"
     echo "  $0 --env=github                    # Use GitHub Actions environment"
     echo "  $0 --env-file=core.env.example     # Use CORE Harbor configuration"
     echo "  $0 --env-file=replica.env.example  # Use REPLICA Harbor configuration"
