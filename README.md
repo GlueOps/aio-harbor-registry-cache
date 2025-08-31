@@ -74,26 +74,6 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 - `TF_VAR_GOOGLE_OIDC_CLIENT_ID` - Google OIDC client ID
 - `TF_VAR_GOOGLE_OIDC_CLIENT_SECRET` - Google OIDC client secret
 
-## HTTPS Configuration
-The setup supports both HTTP and HTTPS modes:
-
-### HTTP Mode (HARBOR_HTTPS_ENABLED=false)
-- Perfect for local development and testing
-- No certificate management required
-- Harbor HTTPS section is automatically removed from configuration
-
-### HTTPS Mode (HARBOR_HTTPS_ENABLED=true)
-- Required for production deployments
-- Supports both generated and custom certificates
-
-#### Certificate Options:
-1. **Auto-generated certificates** (`CREATE_LOCAL_CERTS=true`):
-   - Self-signed certificates for localhost
-   - Suitable for development/testing
-
-2. **Custom certificates** (`CREATE_LOCAL_CERTS=false`):
-   - Use existing certificates specified by environment variables
-   - Required for production with real domain names
 
 ## Registry Proxy Projects
 The script automatically creates proxy projects for major registries:
