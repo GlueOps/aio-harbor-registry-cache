@@ -7,8 +7,8 @@ sleep 5;
 
 #stop all containers except for codespace (this helps for local dev cycles)
 cd harbor
-docker-compose down
+docker-compose down || true
 cd ..
 docker system prune -a -f
-git clean -xdf
+sudo git clean -xdf
 git reset --hard
