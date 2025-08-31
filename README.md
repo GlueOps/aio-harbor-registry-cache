@@ -18,10 +18,13 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 
 ## Usage
 
-### Quick Start (Local Development)
+### Development/CI Environments
 ```bash
-# Use default local environment (CORE mode, HTTP-only)
-./setup.sh
+# Local development
+./setup.sh --env=local
+
+# GitHub Actions CI
+./setup.sh --env=github
 ```
 
 ### Production Deployments
@@ -34,15 +37,6 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 
 # Use custom environment file
 ./setup.sh --env-file=my-production.env
-```
-
-### Development/CI Environments
-```bash
-# Local development
-./setup.sh --env=local
-
-# GitHub Actions CI
-./setup.sh --env=github
 ```
 
 ## Configuration
