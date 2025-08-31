@@ -8,7 +8,7 @@ images=(
     "localhost:80/proxy-quay-io/argoproj/argocd:latest"
     "localhost:80/proxy-ghcr-io/argoproj/argocd:latest"
     "localhost:80/proxy-public-ecr-aws/nginx/nginx:latest"
-    "localhost:80/proxy-mcr-microsoft-com/vscode/devcontainers/base:1-ubuntu-22"
+    "localhost:80/proxy-mcr-microsoft-com/vscode/devcontainers/base:1-ubuntu-22.04"
 
 )
 
