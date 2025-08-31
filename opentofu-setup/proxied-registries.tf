@@ -48,7 +48,7 @@ module "ecr_public_proxy" {
 module "mcr_public_proxy" {
   source = "./modules/proxy-project"
 
-  project_name          = "proxy-mc-microsoft-com"
+  project_name          = "proxy-mcr-microsoft-com"
   registry_provider     = var.harbor_registry_mode == "REPLICA" ? "docker-registry" : "docker-registry"
   registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-mcr-microsoft-com" : "https://mcr.microsoft.com"
 }
