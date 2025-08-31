@@ -21,5 +21,6 @@ jobs:
     - name: Run comprehensive test suite
       run: |
         ./setup.sh --env=github
+        ./test-image-pulls.sh
       timeout-minutes: 25
       
