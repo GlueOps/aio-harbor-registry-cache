@@ -117,6 +117,7 @@ fi
 echo "Configuration loaded successfully!"
 echo "  Harbor Hostname: $HARBOR_HOSTNAME"
 echo "  Harbor URL: ${HARBOR_URL:-Not set}"
+echo "  HTTPS Enabled: ${HARBOR_HTTPS_ENABLED:-true}"
 echo "  Create Local Certs: ${CREATE_LOCAL_CERTS:-false}"
 echo "  Environment: $ENV_NAME"
 echo ""
@@ -155,8 +156,22 @@ else
     fi
 fi
 
+# Ensure yq is available for YAML processing
+if ! command -v yq &> /dev/null; then
+    echo "Installing yq for YAML processing..."
+    sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+    sudo chmod +x /usr/local/bin/yq
+fi
+
 # Generate harbor.yml from template with current environment variables
-cat harbor.yml.tmpl | envsubst > harbor.yml
+if [ "${HARBOR_HTTPS_ENABLED:-true}" = "false" ]; then
+    echo "HTTPS disabled: Removing HTTPS section from harbor.yml..."
+    # Remove the HTTPS section entirely when HTTPS is disabled
+    yq 'del(.https)' harbor.yml.tmpl | envsubst > harbor.yml
+else
+    echo "HTTPS enabled: Including HTTPS configuration in harbor.yml..."
+    cat harbor.yml.tmpl | envsubst > harbor.yml
+fi
 sudo ./install.sh
 cd ../opentofu-setup
 
