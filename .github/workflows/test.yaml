@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: public-XXL
+    runs-on: ubuntu-latest
     
     
     steps:
