@@ -42,3 +42,13 @@ module "ecr_public_proxy" {
   registry_provider     = var.harbor_registry_mode == "REPLICA" ? "harbor" : "docker-registry"
   registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-public-ecr-aws" : "https://public.ecr.aws"
 }
+
+
+# --- Microsoft Container Registry (MCR) Proxy Cache ---
+module "mcr_public_proxy" {
+  source = "./modules/proxy-project"
+
+  project_name          = "proxy-mc-microsoft-com"
+  registry_provider     = var.harbor_registry_mode == "REPLICA" ? "harbor" : "docker-registry"
+  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-mcr-microsoft-com" : "https://mcr.microsoft.com"
+}
