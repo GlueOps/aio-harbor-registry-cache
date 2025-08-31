@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-#stop all containers except for codespace (this helps for local dev cycles)
-ID_TO_KEEP=$(docker ps -a -q --filter name="^/codespace$" || test)
-IDS_TO_STOP=$(docker ps -a -q | grep -v "${ID_TO_KEEP}")
-if [ -n "$IDS_TO_STOP" ]; then
-  docker stop $IDS_TO_STOP
-else
-  echo "No other containers to stop."
-fi
 
+echo "THIS WILL KILL YOUR CODESPACE, IT WILL ALSO DELETE/RESET ANY GIT CHANGES!!"
+sleep 10;
+
+#stop all containers except for codespace (this helps for local dev cycles)
+docker stop $(docker ps -a -q | grep -v $(docker ps -a -q --filter name="^/codespace$"))
 docker system prune -a -f
 git clean -xdf
 git reset --hard
