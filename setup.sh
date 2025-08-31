@@ -120,6 +120,13 @@ echo "  Create Local Certs: ${CREATE_LOCAL_CERTS:-false}"
 echo "  Environment: $ENV_NAME"
 echo ""
 
+# Update hosts file if hostname is not localhost
+# This is required otherwise it could end up connecting to the wrong instance of harbor from using public DNS resolvers.
+if [ "$HARBOR_HOSTNAME" != "localhost" ] && [ "$HARBOR_HOSTNAME" != "127.0.0.1" ]; then
+    sudo sed -i "/[[:space:]]$HARBOR_HOSTNAME[[:space:]]*$/d" /etc/hosts
+    echo "127.0.0.1 $HARBOR_HOSTNAME" | sudo tee -a /etc/hosts > /dev/null
+fi
+
 cd harbor
 docker compose down || true
 docker system prune -a -f
@@ -132,6 +139,15 @@ git clean -xdf
 if [ "${CREATE_LOCAL_CERTS}" = "true" ]; then
     echo "Creating local certificates for testing..."
     
+    # Build Subject Alternative Names including the actual hostname
+    if [ "$HARBOR_HOSTNAME" != "localhost" ] && [ "$HARBOR_HOSTNAME" != "127.0.0.1" ]; then
+        SAN_NAMES="DNS:localhost,DNS:${HARBOR_HOSTNAME},IP:127.0.0.1"
+        CN_NAME="$HARBOR_HOSTNAME"
+    else
+        SAN_NAMES="DNS:localhost,IP:127.0.0.1"
+        CN_NAME="localhost"
+    fi
+    
     openssl req \
         -x509 \
         -nodes \
@@ -139,10 +155,10 @@ if [ "${CREATE_LOCAL_CERTS}" = "true" ]; then
         -keyout $HARBOR_NGINX_KEY_LOCATION \
         -out $HARBOR_NGINX_CERT_LOCATION \
         -days 3650 \
-        -subj "/CN=localhost" \
-        -addext "subjectAltName = DNS:localhost,IP:127.0.0.1"
+        -subj "/CN=${CN_NAME}" \
+        -addext "subjectAltName = ${SAN_NAMES}"
     
-    echo "Success! Created key.pem and cert.pem for localhost."
+    echo "Success! Created key.pem and cert.pem with SAN: ${SAN_NAMES}"
 else
     echo "Skipping local certificate generation - using certificates from environment config:"
     echo "  Certificate: ${HARBOR_NGINX_CERT_LOCATION}"
