@@ -14,4 +14,4 @@ docker pull localhost:80/proxy-public-ecr-aws/nginx/nginx:latest
 
 
 echo ""
-echo "✅ Test completed successfully for environment: $ENV_NAME"
+echo "✅ Test completed successfully.
