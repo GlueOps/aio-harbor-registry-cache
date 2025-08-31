@@ -29,6 +29,10 @@ sudo sh get-docker.sh
 sudo apt update -y
 sudo apt install -y git zip
 ```
+- clone this repo:
+```bash
+git clonehttps://github.com/GlueOps/aio-harbor-registry-cache.git
+```
 
 ## Usage
 
