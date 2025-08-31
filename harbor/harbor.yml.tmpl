@@ -7,12 +7,12 @@ hostname: $HARBOR_HOSTNAME
 # http related config
 http:
   # port for http, default is 80. If https enabled, this port will redirect to https port
-  port: 80
+  port: 8080
 
 # https related config
 https:
   # https port for harbor, default is 443
-  port: 443
+  port: 8443
   # The path of cert and key files for nginx
   certificate: $HARBOR_NGINX_CERT_LOCATION
   private_key: $HARBOR_NGINX_KEY_LOCATION
