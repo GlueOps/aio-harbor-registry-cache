@@ -178,7 +178,7 @@ echo "Downloading OpenTofu v${TOFU_VERSION} to the current directory..."
 curl -s -Lo tofu.zip "https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}/tofu_${TOFU_VERSION}_linux_amd64.zip"
 unzip -p tofu.zip tofu > tofu
 chmod +x tofu
-rm tofu.zip
+rm tofu.zip || true
 sleep 10s
 
 echo "OpenTofu configuration:"
