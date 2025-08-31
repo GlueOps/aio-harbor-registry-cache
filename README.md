@@ -15,6 +15,21 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 - Creates a tiered caching architecture for reduced bandwidth and improved performance
 - Configured with `TF_VAR_harbor_registry_mode="REPLICA"`
 
+## Server Requirements
+
+- Debian 12
+- Docker installed:
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+- git and zip installed:
+```bash
+sudo apt update -y
+sudo apt install -y git zip
+```
+
 ## Usage
 
 ### Development/CI Environments
@@ -70,8 +85,6 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 
 ### Optional Environment Variables
 - `CREATE_LOCAL_CERTS` - Generate local self-signed certificates (true/false, default: false)
-- `TF_VAR_GOOGLE_OIDC_CLIENT_ID` - Google OIDC client ID
-- `TF_VAR_GOOGLE_OIDC_CLIENT_SECRET` - Google OIDC client secret
 
 
 ## Registry Proxy Projects

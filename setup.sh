@@ -206,7 +206,6 @@ echo "  Harbor URL: ${HARBOR_URL:-Not set}"
 echo "  Harbor Username: ${HARBOR_USERNAME:-Not set}"
 echo "  Registry Mode: ${TF_VAR_harbor_registry_mode:-CORE}"
 echo "  Core Hostname: ${TF_VAR_harbor_core_hostname:-N/A}"
-echo "  OIDC Client ID: ${TF_VAR_GOOGLE_OIDC_CLIENT_ID:-Not set}"
 
 ./tofu --version
 ./tofu init
