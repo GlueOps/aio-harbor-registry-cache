@@ -120,13 +120,6 @@ echo "  Create Local Certs: ${CREATE_LOCAL_CERTS:-false}"
 echo "  Environment: $ENV_NAME"
 echo ""
 
-# Update hosts file if hostname is not localhost
-# This is required otherwise it could end up connecting to the wrong instance of harbor from using public DNS resolvers.
-if [ "$HARBOR_HOSTNAME" != "localhost" ] && [ "$HARBOR_HOSTNAME" != "127.0.0.1" ]; then
-    sudo sed -i "/[[:space:]]$HARBOR_HOSTNAME[[:space:]]*$/d" /etc/hosts
-    echo "127.0.0.1 $HARBOR_HOSTNAME" | sudo tee -a /etc/hosts > /dev/null
-fi
-
 cd harbor
 docker compose down || true
 docker system prune -a -f
