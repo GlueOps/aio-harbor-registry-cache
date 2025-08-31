@@ -21,28 +21,28 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 ### Quick Start (Local Development)
 ```bash
 # Use default local environment (CORE mode, HTTP-only)
-./glueops-test.sh
+./setup.sh
 ```
 
 ### Production Deployments
 ```bash
 # Deploy CORE Harbor instance
-./glueops-test.sh --env-file=core.env.example
+./setup.sh --env-file=core.env.example
 
 # Deploy REPLICA Harbor instance
-./glueops-test.sh --env-file=replica.env.example
+./setup.sh --env-file=replica.env.example
 
 # Use custom environment file
-./glueops-test.sh --env-file=my-production.env
+./setup.sh --env-file=my-production.env
 ```
 
 ### Development/CI Environments
 ```bash
 # Local development
-./glueops-test.sh --env=local
+./setup.sh --env=local
 
 # GitHub Actions CI
-./glueops-test.sh --env=github
+./setup.sh --env=github
 ```
 
 ## Configuration
@@ -63,7 +63,7 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
    cp config/replica.env.example config/my-replica.env
    ```
 2. Edit the new file with your environment-specific values
-3. Use with: `./glueops-test.sh --env-file=my-core.env`
+3. Use with: `./setup.sh --env-file=my-core.env`
 
 ### Required Environment Variables
 - `HARBOR_HOSTNAME` - Harbor server hostname
