@@ -19,7 +19,7 @@ jobs:
           npm install -g log4brains
           log4brains build --basePath /${GITHUB_REPOSITORY#*/}/log4brains
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
