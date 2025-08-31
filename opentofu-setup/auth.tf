@@ -1,6 +1,3 @@
-variable "GOOGLE_OIDC_CLIENT_ID" {}
-variable "GOOGLE_OIDC_CLIENT_SECRET" {}
-
 resource "harbor_config_auth" "oidc" {
   auth_mode          = "oidc_auth"
   primary_auth_mode  = false
