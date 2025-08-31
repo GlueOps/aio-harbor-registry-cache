@@ -91,13 +91,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
-# Load common configuration first (if exists)
-COMMON_CONFIG="${CONFIG_DIR}/common.env"
-if [ -f "$COMMON_CONFIG" ]; then
-    echo "Loading common configuration..."
-    source "$COMMON_CONFIG"
-fi
-
 # Load environment-specific configuration
 echo "Loading environment configuration from: $CONFIG_FILE"
 source "$CONFIG_FILE"

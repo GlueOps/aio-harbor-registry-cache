@@ -54,7 +54,6 @@ terraform.rc
 config/*.env
 !config/local.env
 !config/github.env
-!config/common.env
 
 #opentofu-setup
 opentofu-setup/README.md

@@ -48,7 +48,6 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 ## Configuration
 
 ### Environment Files
-- `config/common.env` - Shared variables across all environments (ignored in git)
 - `config/local.env` - Local development settings (ignored in git)
 - `config/github.env` - GitHub Actions CI settings (ignored in git)
 - `config/core.env.example` - CORE Harbor template
