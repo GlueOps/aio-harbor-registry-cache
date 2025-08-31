@@ -1,24 +1,27 @@
-name:  Build and Deploy log4brains
+name: Publish Log4brains
 on:
   push:
     branches:
       - main
-permissions:
-  contents: write
 jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false # required by JamesIves/github-pages-deploy-action
+          fetch-depth: 0 # required by Log4brains to work correctly (needs the whole Git history)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install and Build Log4brains
         run: |
-          npm ci
-          npm run build
-
-      - name: Deploy 🚀
+          npm install -g log4brains
+          log4brains build --basePath /${GITHUB_REPOSITORY#*/}/log4brains
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build # The folder the action should deploy.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: .log4brains/out
+          TARGET_FOLDER: log4brains
