@@ -7,135 +7,143 @@ An all-in-one Harbor registry cache setup with OpenTofu configuration for managi
 
 This project implements a tiered Harbor registry cache architecture with both CORE and REPLICA deployment modes for distributed caching across multiple data centers.
 
+### High-Level Architecture Overview
+
 ```mermaid
 graph TB
     subgraph "External Registries"
-        DockerHub[Docker Hub<br/>hub.docker.com]
-        GHCR[GitHub Container Registry<br/>ghcr.io]
-        Quay[Quay.io<br/>quay.io]
-        GCR[Google Container Registry<br/>gcr.io]
-        ECR[AWS Public ECR<br/>public.ecr.aws]
+        Upstream[Docker Hub, GHCR, Quay, GCR, ECR]
     end
-
-    subgraph "Data Center 1 - CORE Harbor"
-        subgraph "Core Node"
-            CoreNginx[Nginx Proxy<br/>Port 443 → 8443<br/>TLS 1.3 Termination]
-            CoreHarbor[Harbor Core<br/>Port 8443<br/>180-day cache]
-            CoreVolume[(Persistent Storage<br/>180-day retention)]
-        end
-        CoreNginx --> CoreHarbor
-        CoreHarbor --> CoreVolume
+    
+    subgraph "CORE Tier (180-day cache)"
+        Core[CORE Harbor Instances<br/>Multiple Data Centers]
     end
-
-    subgraph "Data Center 2 - CORE Harbor"
-        subgraph "Core Node 2"
-            Core2Nginx[Nginx Proxy<br/>Port 443 → 8443<br/>TLS 1.3 Termination]
-            Core2Harbor[Harbor Core<br/>Port 8443<br/>180-day cache]
-            Core2Volume[(Persistent Storage<br/>180-day retention)]
-        end
-        Core2Nginx --> Core2Harbor
-        Core2Harbor --> Core2Volume
+    
+    subgraph "REPLICA Tier (14-day cache)"
+        Replica[REPLICA Harbor Instances<br/>Regional Locations]
     end
-
-    subgraph "Regional Location 1 - REPLICA Harbor"
-        subgraph "Replica Node"
-            ReplicaNginx[Nginx Proxy<br/>Port 443 → 8443<br/>Path Rewriting<br/>TLS 1.3 Termination]
-            ReplicaHarbor[Harbor Replica<br/>Port 8443<br/>14-day cache]
-            ReplicaVolume[(Persistent Storage<br/>14-day retention)]
-        end
-        ReplicaNginx --> ReplicaHarbor
-        ReplicaHarbor --> ReplicaVolume
-    end
-
-    subgraph "Regional Location 2 - REPLICA Harbor"
-        subgraph "Replica Node 2"
-            Replica2Nginx[Nginx Proxy<br/>Port 443 → 8443<br/>Path Rewriting<br/>TLS 1.3 Termination]
-            Replica2Harbor[Harbor Replica<br/>Port 8443<br/>14-day cache]
-            Replica2Volume[(Persistent Storage<br/>14-day retention)]
-        end
-        Replica2Nginx --> Replica2Harbor
-        Replica2Harbor --> Replica2Volume
-    end
-
-    subgraph "DNS Layer"
-        DNSCore[DNS Round Robin<br/>harbor-core.domain.com<br/>Geo-based routing]
-        DNSReplica[DNS Round Robin<br/>harbor-replica-region.domain.com<br/>Health checks]
-    end
-
+    
     subgraph "Clients"
-        K8sCluster[Kubernetes Clusters]
-        CI[CI/CD Pipelines]
-        Developers[Developer Workstations]
+        Users[K8s Clusters, CI/CD, Developers]
     end
-
-    subgraph "OIDC & Authentication"
-        GoogleOIDC[Google OIDC<br/>Admin Authentication]
-        LocalOIDC[Local OIDC Testing<br/>⚠️ Challenging with devtunnels]
-        VPSOIDC[VPS OIDC Testing<br/>✅ Recommended approach]
-    end
-
-    %% External registry connections (CORE only)
-    CoreHarbor -.->|Proxy Cache| DockerHub
-    CoreHarbor -.->|Proxy Cache| GHCR
-    CoreHarbor -.->|Proxy Cache| Quay
-    CoreHarbor -.->|Proxy Cache| GCR
-    CoreHarbor -.->|Proxy Cache| ECR
     
-    Core2Harbor -.->|Proxy Cache| DockerHub
-    Core2Harbor -.->|Proxy Cache| GHCR
-    Core2Harbor -.->|Proxy Cache| Quay
-    Core2Harbor -.->|Proxy Cache| GCR
-    Core2Harbor -.->|Proxy Cache| ECR
-
-    %% REPLICA connections (point to CORE only)
-    ReplicaHarbor -.->|Proxy Cache<br/>No direct upstream| CoreHarbor
-    ReplicaHarbor -.->|Proxy Cache<br/>No direct upstream| Core2Harbor
+    Upstream -.->|Direct Connection| Core
+    Core -.->|Tiered Caching| Replica
+    Users --> Replica
+    Users --> Core
     
-    Replica2Harbor -.->|Proxy Cache<br/>No direct upstream| CoreHarbor
-    Replica2Harbor -.->|Proxy Cache<br/>No direct upstream| Core2Harbor
-
-    %% DNS routing
-    DNSCore --> CoreNginx
-    DNSCore --> Core2Nginx
-    DNSReplica --> ReplicaNginx
-    DNSReplica --> Replica2Nginx
-
-    %% Client connections
-    K8sCluster --> DNSCore
-    K8sCluster --> DNSReplica
-    CI --> DNSCore
-    CI --> DNSReplica
-    Developers --> DNSCore
-    Developers --> DNSReplica
-
-    %% OIDC connections
-    GoogleOIDC -.->|Admin Access| CoreHarbor
-    GoogleOIDC -.->|Admin Access| Core2Harbor
-    GoogleOIDC -.->|Admin Access| ReplicaHarbor
-    GoogleOIDC -.->|Admin Access| Replica2Harbor
-    
-    LocalOIDC -.->|❌ Difficult| CoreHarbor
-    VPSOIDC -.->|✅ Works Well| CoreHarbor
-
-    classDef coreNode fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef replicaNode fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef externalRegistry fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef nginx fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef dns fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef upstream fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef replica fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     classDef client fill:#f1f8e9,stroke:#33691e,stroke-width:2px
-    classDef oidc fill:#fff8e1,stroke:#f57f17,stroke-width:2px
-    classDef warning fill:#ffebee,stroke:#c62828,stroke-width:2px
-    classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class Upstream upstream
+    class Core core
+    class Replica replica
+    class Users client
+```
 
-    class CoreHarbor,Core2Harbor,CoreVolume,Core2Volume coreNode
-    class ReplicaHarbor,Replica2Harbor,ReplicaVolume,Replica2Volume replicaNode
-    class DockerHub,GHCR,Quay,GCR,ECR externalRegistry
-    class CoreNginx,Core2Nginx,ReplicaNginx,Replica2Nginx nginx
-    class DNSCore,DNSReplica dns
-    class K8sCluster,CI,Developers client
-    class GoogleOIDC,LocalOIDC,VPSOIDC oidc
-    class LocalOIDC warning
-    class VPSOIDC success
+### CORE Harbor Node Architecture
+
+```mermaid
+graph TB
+    subgraph "External"
+        DockerHub[Docker Hub]
+        GHCR[GitHub Registry]
+        Quay[Quay.io]
+    end
+    
+    subgraph "CORE Harbor Node"
+        Client[Client Request<br/>:443/proxy-docker-io/image:tag]
+        Nginx[Nginx Proxy<br/>TLS Termination<br/>443 → 8443]
+        Harbor[Harbor Core<br/>:8443]
+        Storage[(Persistent Storage<br/>180-day retention)]
+    end
+    
+    Client --> Nginx
+    Nginx --> Harbor
+    Harbor --> Storage
+    Harbor -.->|Cache Miss| DockerHub
+    Harbor -.->|Cache Miss| GHCR
+    Harbor -.->|Cache Miss| Quay
+    
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef proxy fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef harbor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    
+    class DockerHub,GHCR,Quay external
+    class Nginx proxy
+    class Harbor harbor
+    class Storage storage
+```
+
+### REPLICA Harbor Node Architecture
+
+```mermaid
+graph TB
+    subgraph "CORE Harbor"
+        CoreHarbor[CORE Harbor Instance<br/>harbor-core.domain.com]
+    end
+    
+    subgraph "REPLICA Harbor Node"
+        Client[Client Request<br/>:443/proxy-docker-io/image:tag]
+        Nginx[Nginx Proxy<br/>Path Rewriting<br/>443 → 8443]
+        Harbor[Harbor Replica<br/>:8443]
+        Storage[(Persistent Storage<br/>14-day retention)]
+    end
+    
+    Client --> Nginx
+    Nginx --> Harbor
+    Harbor --> Storage
+    Harbor -.->|Cache Miss<br/>No Direct Upstream| CoreHarbor
+    
+    note1[❌ No Direct Connection<br/>to External Registries]
+    note1 -.-> Harbor
+    
+    classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef proxy fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef replica fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef warning fill:#ffebee,stroke:#c62828,stroke-width:2px
+    
+    class CoreHarbor core
+    class Nginx proxy
+    class Harbor replica
+    class Storage storage
+    class note1 warning
+```
+
+### OIDC Testing Challenge
+
+```mermaid
+graph TB
+    subgraph "Local Development"
+        DevMachine[Developer Machine<br/>localhost or devtunnel]
+        LocalOIDC[❌ OIDC Issues<br/>• Unstable URLs<br/>• Self-signed certs<br/>• Port mapping complexity]
+    end
+    
+    subgraph "VPS Deployment"
+        VPS[VPS with Real Domain<br/>harbor.yourdomain.com]
+        VPSOIDC[✅ OIDC Works<br/>• Stable public URL<br/>• Valid TLS certs<br/>• Production parity]
+    end
+    
+    subgraph "OIDC Provider"
+        Google[Google OAuth<br/>Callback URL validation]
+    end
+    
+    DevMachine -.->|Unreliable| LocalOIDC
+    VPS --> VPSOIDC
+    LocalOIDC -.->|Often Fails| Google
+    VPSOIDC --> Google
+    
+    classDef local fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef vps fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef oidc fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    
+    class DevMachine,LocalOIDC local
+    class VPS,VPSOIDC vps
+    class Google oidc
 ```
 
 ### CORE Mode
