@@ -161,14 +161,6 @@ Output: :8443/proxy-docker-io/proxy-docker-io/nginx:latest
 
 This rewriting ensures that Harbor's `proxy-docker-io` project correctly receives requests with the expected path structure.
 
-#### Why Another Nginx?
-Harbor includes its own internal nginx, but we add an external nginx layer for several reasons:
-
-1. **Clean Client Interface**: Clients can use standard port 443 instead of Harbor's 8443
-2. **URL Path Normalization**: REPLICAs need special path rewriting to work with Harbor's proxy project structure
-3. **TLS Configuration Control**: Modern TLS 1.3-only configuration with security headers
-4. **Future Extensibility**: Allows for load balancing, additional routing rules, and monitoring
-
 ### DNS-Based Load Balancing
 The architecture uses DNS for service discovery and load balancing:
 
