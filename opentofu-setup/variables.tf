@@ -19,3 +19,14 @@ variable "harbor_core_hostname" {
     error_message = "harbor_core_hostname is required when harbor_registry_mode is 'REPLICA'."
   }
 }
+
+variable "GOOGLE_OIDC_CLIENT_ID" {
+  description = "Google OIDC Client ID for authentication"
+  type        = string
+}
+
+variable "GOOGLE_OIDC_CLIENT_SECRET" {
+  description = "Google OIDC Client Secret for authentication"
+  type        = string
+  sensitive   = true
+}

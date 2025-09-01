@@ -15,3 +15,11 @@ resource "harbor_registry" "default" {
   name          = var.project_name # Using project name for consistency
   endpoint_url  = var.registry_endpoint_url
 }
+
+# Assigns an OIDC group with administrative permissions to the project.
+resource "harbor_project_member_group" "default" {
+  project_id = harbor_project.default.id
+  group_name = var.admin_group_name
+  role       = "projectadmin"
+  type       = "oidc"
+}
