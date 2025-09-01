@@ -27,20 +27,26 @@ graph TB
         Users[K8s Clusters, CI/CD, Developers]
     end
     
+    subgraph "Cache Management"
+        WarmUp[GitHub Action<br/>Cache Warm-up<br/>Optional]
+    end
+    
     Upstream -.->|Direct Connection| Core
     Core -.->|Tiered Caching| Replica
     Users --> Replica
-    Users --> Core
+    WarmUp -.->|Optional<br/>Pre-populate Cache| Core
     
     classDef upstream fill:#fff3e0,stroke:#e65100,stroke-width:2px
     classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     classDef replica fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     classDef client fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef warmup fill:#fff8e1,stroke:#f57f17,stroke-width:2px
     
     class Upstream upstream
     class Core core
     class Replica replica
     class Users client
+    class WarmUp warmup
 ```
 
 ### CORE Harbor Node Architecture
