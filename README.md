@@ -87,8 +87,8 @@ graph TB
     end
     
     subgraph "REPLICA Harbor Node"
-        Client[Client Request<br/>:443/proxy-docker-io/image:tag]
-        Nginx[Nginx Proxy<br/>Path Rewriting<br/>443 → 8443]
+        Client[Client Request<br/>replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest]
+        Nginx[Nginx Proxy<br/>Path Rewriting<br/>443 → 8443<br/><br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>:8443/proxy-docker-io/proxy-docker-io/nginx:latest]
         Harbor[Harbor Replica<br/>:8443]
         Storage[(Data Volume<br/>14-day cache<br/>⚠️ Rebuilt on updates)]
     end
@@ -140,6 +140,20 @@ Each Harbor deployment includes an Nginx proxy that serves multiple critical fun
 - **Port Translation**: Redirects from standard HTTPS port 443 to Harbor's 8443
 - **Path Rewriting** (REPLICA only): Transforms client requests to match Harbor's proxy project structure
 - **HTTP to HTTPS Redirect**: Ensures all traffic is encrypted
+
+#### REPLICA Path Rewriting Example
+REPLICA nodes require special nginx path rewriting because Harbor's proxy projects expect duplicated path segments:
+
+```
+Client Request:
+docker pull replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest
+
+Nginx Transformation:
+Input:  /proxy-docker-io/nginx:latest
+Output: :8443/proxy-docker-io/proxy-docker-io/nginx:latest
+```
+
+This rewriting ensures that Harbor's `proxy-docker-io` project correctly receives requests with the expected path structure.
 
 #### Why Another Nginx?
 Harbor includes its own internal nginx, but we add an external nginx layer for several reasons:
