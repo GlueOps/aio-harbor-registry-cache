@@ -3,7 +3,7 @@ set -e
 
 # Define an array of images to test
 images=(
-    "localhost:80/proxy-docker-io/alpine:latest"
+    "localhost:80/proxy-docker-io/library/alpine:latest"
     "localhost:80/proxy-docker-io/nginx/nginx-ingress:latest"
     "localhost:80/proxy-quay-io/argoproj/argocd:latest"
     "localhost:80/proxy-ghcr-io/argoproj/argocd:latest"

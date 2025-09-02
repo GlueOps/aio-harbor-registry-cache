@@ -12,5 +12,5 @@ sudo docker stop nginx-redirect || true
 sudo docker stop  harbor-health-check || true
 cd ..
 docker system prune -a -f
-sudo git clean -xdf
+sudo git clean -xdf -e cert.pem -e key.pem -e config/*.env
 git reset --hard
