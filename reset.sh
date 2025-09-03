@@ -14,11 +14,11 @@ cd ..
 docker system prune -a -f
 backup_folder=backup-$(date +%s)
 mkdir -p ../$backup_folder/configs
-mv cert.pem ../$backup_folder/cert.pem
-mv key.pem ../$backup_folder/key.pem
-mv configs/*.env ../$backup_folder/configs
+cp cert.pem ../$backup_folder/cert.pem
+cp key.pem ../$backup_folder/key.pem
+cp configs/*.env ../$backup_folder/configs
 sudo git clean -xdf
 git reset --hard
-mv ../$backup_folder/cert.pem .
-mv ../$backup_folder/key.pem
-mv ../$backup_folder/configs/*.env configs/
+cp ../$backup_folder/cert.pem .
+cp ../$backup_folder/key.pem .
+cp ../$backup_folder/config/*.env config/
