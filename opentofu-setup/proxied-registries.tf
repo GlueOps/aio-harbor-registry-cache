@@ -4,7 +4,7 @@ module "dockerhub_proxy" {
 
   project_name          = "proxy-docker-io"
   registry_provider     = var.harbor_registry_mode == "REPLICA" ? "docker-registry" : "docker-registry"
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-docker-io" : "https://hub.docker.com"
+  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-docker-io" : "https://registry-1.docker.io"
   admin_group_name      = local.admin_group_name
 }
 
