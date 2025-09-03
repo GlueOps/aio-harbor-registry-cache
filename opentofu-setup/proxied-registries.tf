@@ -36,7 +36,7 @@ module "proxy_registry" {
   for_each = local.proxy_registries
 
   project_name          = each.value.project_name
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/${each.value.project_name}" : each.value.upstream_url
+  registry_provider     = var.harbor_registry_mode == "REPLICA" ? "harbor" : local.registry_provider
+  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}:8443" : each.value.upstream_url
   admin_group_name      = local.admin_group_name
 }
