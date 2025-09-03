@@ -6,7 +6,7 @@ images=(
     "localhost:80/proxy-docker-io/library/alpine:latest"
     "localhost:80/proxy-docker-io/nginx/nginx-ingress:latest"
     "localhost:80/proxy-quay-io/argoproj/argocd:latest"
-    "localhost:80/proxy-ghcr-io/argoproj/argocd:latest"
+    "localhost:80/proxy-ghcr-io/argoproj/argo-cd/argocd:3.2.0-d269e6f9"
     "localhost:80/proxy-public-ecr-aws/nginx/nginx:latest"
     "localhost:80/proxy-mcr-microsoft-com/vscode/devcontainers/base:1-ubuntu-22.04"
 
