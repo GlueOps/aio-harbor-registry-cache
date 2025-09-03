@@ -13,10 +13,10 @@ sudo docker stop  harbor-health-check || true
 cd ..
 docker system prune -a -f
 backup_folder=backup-$(date +%s)
-mkdir -p ../$backup_folder/configs
+mkdir -p ../$backup_folder/config
 cp cert.pem ../$backup_folder/cert.pem
 cp key.pem ../$backup_folder/key.pem
-cp configs/*.env ../$backup_folder/configs
+cp config/*.env ../$backup_folder/config
 sudo git clean -xdf
 git reset --hard
 cp ../$backup_folder/cert.pem .
