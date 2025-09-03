@@ -1,4 +1,4 @@
-name: Publish Log4brains
+name: Publish Log4brains/ADRs
 on:
   push:
     branches:

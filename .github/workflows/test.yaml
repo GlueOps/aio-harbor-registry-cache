@@ -1,4 +1,4 @@
-name: Registry Facade Tests
+name: Registry Pull Tests via Proxy
 
 on:
   push:
