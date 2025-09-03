@@ -12,5 +12,13 @@ sudo docker stop nginx-redirect || true
 sudo docker stop  harbor-health-check || true
 cd ..
 docker system prune -a -f
-sudo git clean -xdf -e cert.pem -e key.pem -e config/*.env
+backup_folder=backup-$(date +%s)
+mkdir -p ../$backup_folder/configs
+mv cert.pem ../$backup_folder/cert.pem
+mv key.pem ../$backup_folder/key.pem
+mv configs/*.env ../$backup_folder/configs
+sudo git clean -xdf
 git reset --hard
+mv ../$backup_folder/cert.pem .
+mv ../$backup_folder/key.pem
+mv ../$backup_folder/configs/*.env configs/
