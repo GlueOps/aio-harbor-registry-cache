@@ -183,7 +183,7 @@ else
     echo "HTTPS enabled: Including HTTPS configuration in harbor.yml..."
     cat harbor.yml.tmpl | envsubst > harbor.yml
 fi
-sudo ./install.sh
+sudo ./install.sh --with-trivy
 cd ../opentofu-setup
 
 TOFU_VERSION="1.10.5"
