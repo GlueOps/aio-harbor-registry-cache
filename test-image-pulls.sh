@@ -9,7 +9,7 @@ images=(
     "localhost:80/proxy-ghcr-io/argoproj/argo-cd/argocd:3.2.0-d269e6f9"
     "localhost:80/proxy-public-ecr-aws/nginx/nginx:latest"
     "localhost:80/proxy-mcr-microsoft-com/vscode/devcontainers/base:1-ubuntu-22.04"
-
+    "localhost:80/proxy-registry-k8s-io/kube-state-metrics/kube-state-metrics:v2.12.0"
 )
 
 echo "Testing registry proxy functionality..."

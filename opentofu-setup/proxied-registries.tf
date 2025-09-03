@@ -24,11 +24,15 @@ locals {
       project_name = "proxy-mcr-microsoft-com"
       upstream_url = "https://mcr.microsoft.com"
     }
+    registry_k8s_io_proxy = {
+      project_name = "proxy-registry-k8s-io"
+      upstream_url = "https://registry.k8s.io"
+    }
   }
 }
 
 module "proxy_registry" {
-  source = "./modules/proxy-project"
+  source   = "./modules/proxy-project"
   for_each = local.proxy_registries
 
   project_name          = each.value.project_name
