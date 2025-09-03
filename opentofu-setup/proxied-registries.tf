@@ -1,65 +1,38 @@
-# --- Docker Hub Proxy Cache ---
-module "dockerhub_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name          = "proxy-docker-io"
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-docker-io" : "https://registry-1.docker.io"
-  admin_group_name      = local.admin_group_name
+locals {
+  proxy_registries = {
+    dockerhub_proxy = {
+      project_name = "proxy-docker-io"
+      upstream_url = "https://registry-1.docker.io"
+    }
+    quay_proxy = {
+      project_name = "proxy-quay-io"
+      upstream_url = "https://quay.io"
+    }
+    gcr_proxy = {
+      project_name = "proxy-gcr-io"
+      upstream_url = "https://gcr.io"
+    }
+    ghcr_proxy = {
+      project_name = "proxy-ghcr-io"
+      upstream_url = "https://ghcr.io"
+    }
+    ecr_public_proxy = {
+      project_name = "proxy-public-ecr-aws"
+      upstream_url = "https://public.ecr.aws"
+    }
+    mcr_public_proxy = {
+      project_name = "proxy-mcr-microsoft-com"
+      upstream_url = "https://mcr.microsoft.com"
+    }
+  }
 }
 
-# --- Quay.io Proxy Cache ---
-module "quay_proxy" {
+module "proxy_registry" {
   source = "./modules/proxy-project"
+  for_each = local.proxy_registries
 
-  project_name          = "proxy-quay-io"
+  project_name          = each.value.project_name
   registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-quay-io" : "https://quay.io"
+  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/${each.value.project_name}" : each.value.upstream_url
   admin_group_name      = local.admin_group_name
-
-}
-
-# --- Google Container Registry (GCR) Proxy Cache ---
-module "gcr_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name          = "proxy-gcr-io"
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-gcr-io" : "https://gcr.io"
-  admin_group_name      = local.admin_group_name
-
-}
-
-# --- GitHub Container Registry (GHCR) Proxy Cache ---
-module "ghcr_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name          = "proxy-ghcr-io"
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-ghcr-io" : "https://ghcr.io"
-  admin_group_name      = local.admin_group_name
-
-}
-
-# --- Amazon ECR Public Proxy Cache ---
-module "ecr_public_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name          = "proxy-public-ecr-aws"
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-public-ecr-aws" : "https://public.ecr.aws"
-  admin_group_name      = local.admin_group_name
-
-}
-
-
-# --- Microsoft Container Registry (MCR) Proxy Cache ---
-module "mcr_public_proxy" {
-  source = "./modules/proxy-project"
-
-  project_name          = "proxy-mcr-microsoft-com"
-  registry_provider     = local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}/proxy-mcr-microsoft-com" : "https://mcr.microsoft.com"
-  admin_group_name      = local.admin_group_name
-
 }
