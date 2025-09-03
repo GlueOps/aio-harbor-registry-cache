@@ -183,7 +183,16 @@ else
     echo "HTTPS enabled: Including HTTPS configuration in harbor.yml..."
     cat harbor.yml.tmpl | envsubst > harbor.yml
 fi
-sudo ./install.sh --with-trivy
+
+if [[ "${ENV_NAME,,}" == "replica" ]]; then
+  echo "WARN: INSTALLING WITHOUT TRIVY SINCE THIS IS A REPLICA"
+  sudo ./install.sh
+
+else
+  echo "WARN: INSTALLING WITH TRIVY SINCE THIS IS NOT A REPLICA"
+  sudo ./install.sh --with-trivy
+fi
+
 cd ../opentofu-setup
 
 TOFU_VERSION="1.10.5"
