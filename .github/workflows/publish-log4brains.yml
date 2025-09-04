@@ -11,7 +11,7 @@ jobs:
         with:
           persist-credentials: false # required by JamesIves/github-pages-deploy-action
           fetch-depth: 0 # required by Log4brains to work correctly (needs the whole Git history)
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: lts/*
       - name: Install and Build Log4brains
