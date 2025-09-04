@@ -37,11 +37,12 @@ graph TB
     
     Upstream -.->|Direct Connection| Core
     Core -.->|Tiered Caching| Replica
-    Users --> Replica
+    Users -->|DNS Lookup| Route53
+    Route53 -->|Returns Healthy IPs| Users
+    Users -->|Image Pulls| Replica
     WarmUp -.->|Optional<br/>Pre-populate Cache| Core
     Route53 -.->|Health Monitoring| Core
     Route53 -.->|Health Monitoring| Replica
-    Route53 -.->|DNS Resolution| Users
     
     classDef upstream fill:#fff3e0,stroke:#e65100,stroke-width:2px
     classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px
