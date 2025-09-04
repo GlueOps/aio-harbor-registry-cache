@@ -20,5 +20,5 @@ variable "admin_group_name" {
 
 variable "n_days_since_last_pull_retention" {
   description = "The number of days to retain an image since the image was last pulled"
-  type        = int
+  type        = number
 }
