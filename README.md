@@ -31,22 +31,31 @@ graph TB
         WarmUp[GitHub Action<br/>Cache Warm-up<br/>Optional]
     end
     
+    subgraph "DNS & Health Monitoring"
+        Route53[Route53<br/>DNS Failover<br/>Health Checks :1337]
+    end
+    
     Upstream -.->|Direct Connection| Core
     Core -.->|Tiered Caching| Replica
     Users --> Replica
     WarmUp -.->|Optional<br/>Pre-populate Cache| Core
+    Route53 -.->|Health Monitoring| Core
+    Route53 -.->|Health Monitoring| Replica
+    Route53 -.->|DNS Resolution| Users
     
     classDef upstream fill:#fff3e0,stroke:#e65100,stroke-width:2px
     classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     classDef replica fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     classDef client fill:#f1f8e9,stroke:#33691e,stroke-width:2px
     classDef warmup fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef dns fill:#fce4ec,stroke:#880e4f,stroke-width:2px
     
     class Upstream upstream
     class Core core
     class Replica replica
     class Users client
     class WarmUp warmup
+    class Route53 dns
 ```
 
 ### CORE Harbor Node Architecture
@@ -57,18 +66,22 @@ graph TB
         DockerHub[Docker Hub]
         GHCR[GitHub Registry]
         Quay[Quay.io]
+        Route53[Route53 Health Check]
     end
     
     subgraph "CORE Harbor Node"
         Client[Client Request<br/>:443/proxy-docker-io/image:tag]
         Nginx[Nginx Proxy<br/>TLS Termination<br/>443 → 8443]
         Harbor[Harbor Core<br/>:8443]
+        HealthCheck[Health Check Service<br/>:1337<br/>Monitors Harbor Health]
         Storage[(Data Volume<br/>180-day cache<br/>⚠️ Rebuilt on updates)]
     end
     
     Client --> Nginx
     Nginx --> Harbor
     Harbor --> Storage
+    Route53 --> HealthCheck
+    HealthCheck -.->|Queries /api/v2.0/health| Harbor
     Harbor -.->|Cache Miss| DockerHub
     Harbor -.->|Cache Miss| GHCR
     Harbor -.->|Cache Miss| Quay
@@ -77,11 +90,13 @@ graph TB
     classDef proxy fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
     classDef harbor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef health fill:#fff8e1,stroke:#f57f17,stroke-width:2px
     
-    class DockerHub,GHCR,Quay external
+    class DockerHub,GHCR,Quay,Route53 external
     class Nginx proxy
     class Harbor harbor
     class Storage storage
+    class HealthCheck health
 ```
 
 ### REPLICA Harbor Node Architecture
@@ -92,16 +107,23 @@ graph TB
         CoreHarbor[CORE Harbor Instance<br/>harbor-core.domain.com]
     end
     
+    subgraph "External"
+        Route53[Route53 Health Check]
+    end
+    
     subgraph "REPLICA Harbor Node"
         Client[Client Request<br/>replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest]
         Nginx[Nginx Proxy<br/>Path Rewriting<br/>443 → 8443<br/><br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>:8443/proxy-docker-io/proxy-docker-io/nginx:latest]
         Harbor[Harbor Replica<br/>:8443]
+        HealthCheck[Health Check Service<br/>:1337<br/>Monitors Harbor Health]
         Storage[(Data Volume<br/>14-day cache<br/>⚠️ Rebuilt on updates)]
     end
     
     Client --> Nginx
     Nginx --> Harbor
     Harbor --> Storage
+    Route53 --> HealthCheck
+    HealthCheck -.->|Queries /api/v2.0/health| Harbor
     Harbor -.->|Cache Miss<br/>No Direct Upstream| CoreHarbor
     
     note1[❌ No Direct Connection<br/>to External Registries]
@@ -112,12 +134,16 @@ graph TB
     classDef replica fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     classDef warning fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef health fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
     
     class CoreHarbor core
     class Nginx proxy
     class Harbor replica
     class Storage storage
     class note1 warning
+    class HealthCheck health
+    class Route53 external
 ```
 
 ### CORE Mode
@@ -165,9 +191,11 @@ This rewriting ensures that Harbor's `proxy-docker-io` project correctly receive
 The architecture uses DNS for service discovery and load balancing:
 
 - **Geo-based Routing**: Route clients to the nearest available instance
-- **Health Checks**: Automatic failover when nodes become unavailable  
+- **Health Checks**: Automatic failover when nodes become unavailable using Route53 health checks on port 1337
 - **Round Robin Distribution**: Distribute load across available CORE nodes
 - **Cost Effective**: Eliminates need for dedicated load balancers
+
+**Health Check Integration**: Route53 monitors the custom health check service on port 1337, which provides accurate Harbor health status by interpreting the Harbor API response payload, enabling reliable DNS failover.
 
 ### OIDC Authentication Challenges
 
@@ -192,6 +220,46 @@ The system supports Google OIDC for administrative access:
 - `TF_VAR_GOOGLE_OIDC_CLIENT_ID`: Google OAuth client ID
 - `TF_VAR_GOOGLE_OIDC_CLIENT_SECRET`: Google OAuth client secret
 - Authentication is disabled for image pulls to ensure frictionless cluster bootstrapping
+
+## Network Requirements
+
+All TCP ports must be open for proper operation:
+
+| Port | Service | Purpose | Accessibility |
+|------|---------|---------|---------------|
+| 80 | Nginx HTTP | HTTP traffic (redirects to 8443 via 443) | External |
+| 443 | Nginx HTTPS | HTTPS traffic (redirects to 8443) | External |
+| 8080 | Harbor HTTP | Harbor internal HTTP (redirects to 8443) | Internal |
+| 8443 | Harbor HTTPS | **Main Harbor service endpoint** | Internal |
+| 1337 | Health Check | Custom health monitoring for Route53 DNS failover | External |
+
+### Port Flow
+```
+Client Request → Port 80/443 (Nginx) → Port 8443 (Harbor)
+Route53 Health Check → Port 1337 (Health Check Service) → Port 8443 (Harbor Health API)
+```
+
+**Note**: Docker clients and Kubernetes automatically follow redirects, so requests to `replicas.mirror.gpkg.io` flow: `80/443 → 8443` for every image pull.
+
+## Health Check Service (Port 1337)
+
+Harbor's built-in health check always returns HTTP 200, even when components are unhealthy. To enable proper DNS failover with Route53, a custom health check service runs on **port 1337** that:
+
+- Queries Harbor's `/api/v2.0/health` endpoint 
+- Interprets the JSON response payload
+- Returns **HTTP 503** if ANY Harbor component reports as "unhealthy"
+- Returns **HTTP 200** only when all Harbor components are healthy
+- Enables Route53 to automatically failover to healthy instances
+
+### Testing the Health Check
+```bash
+# Test health check directly
+curl http://your-harbor-host:1337
+
+# Expected responses:
+# HTTP 200 - All Harbor components healthy
+# HTTP 503 - One or more Harbor components unhealthy or Harbor unreachable
+```
 
 ## Server Requirements
 
