@@ -35,8 +35,9 @@ module "proxy_registry" {
   source   = "./modules/proxy-project"
   for_each = local.proxy_registries
 
-  project_name          = each.value.project_name
-  registry_provider     = var.harbor_registry_mode == "REPLICA" ? "harbor" : local.registry_provider
-  registry_endpoint_url = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}:8443" : each.value.upstream_url
-  admin_group_name      = local.admin_group_name
+  project_name                     = each.value.project_name
+  registry_provider                = var.harbor_registry_mode == "REPLICA" ? "harbor" : local.registry_provider
+  registry_endpoint_url            = var.harbor_registry_mode == "REPLICA" ? "https://${var.harbor_core_hostname}:8443" : each.value.upstream_url
+  admin_group_name                 = local.admin_group_name
+  n_days_since_last_pull_retention = var.harbor_registry_mode == "REPLICA" ? 60 : 120
 }

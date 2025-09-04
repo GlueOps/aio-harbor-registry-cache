@@ -23,3 +23,14 @@ resource "harbor_project_member_group" "default" {
   role       = "projectadmin"
   type       = "oidc"
 }
+
+
+resource "harbor_retention_policy" "main" {
+  scope    = harbor_project.default.id
+  schedule = "Hourly"
+  rule {
+    n_days_since_last_pull = var.n_days_since_last_pull_retention
+    repo_matching          = "**"
+    tag_matching           = "**"
+  }
+}
