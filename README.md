@@ -231,7 +231,7 @@ All TCP ports must be open for proper operation:
 | 443 | Nginx HTTPS | HTTPS traffic (redirects to 8443) | External |
 | 8080 | Harbor HTTP | Harbor internal HTTP (redirects to 8443) | Internal |
 | 8443 | Harbor HTTPS | **Main Harbor service endpoint** | Internal |
-| 1337 | Health Check | Custom health monitoring for Route53 DNS failover | External |
+| 1337 | Health Check | Route53 DNS health monitoring (infrastructure only) | External |
 
 ### Port Flow
 ```
@@ -239,7 +239,7 @@ Client Request → Port 80/443 (Nginx) → Port 8443 (Harbor)
 Route53 Health Check → Port 1337 (Health Check Service) → Port 8443 (Harbor Health API)
 ```
 
-**Note**: Docker clients and Kubernetes automatically follow redirects, so requests to `replicas.mirror.gpkg.io` flow: `80/443 → 8443` for every image pull.
+**Note**: Docker clients and Kubernetes automatically follow redirects, so requests to `replicas.mirror.gpkg.io` flow: `80/443 → 8443` for every image pull. Clients never interact with port 1337 - it's purely for DNS failover.
 
 ## Health Check Service (Port 1337)
 
@@ -251,10 +251,12 @@ Harbor's built-in health check always returns HTTP 200, even when components are
 - Returns **HTTP 200** only when all Harbor components are healthy
 - Enables Route53 to automatically failover to healthy instances
 
-### Testing the Health Check
+**Important**: This is purely infrastructure-level monitoring. Docker clients, Kubernetes clusters, and developers never interact with this port - they only use ports 80/443 for image pulls.
+
+### Testing the Health Check (Infrastructure/Operations Only)
 ```bash
-# Test health check directly
-curl http://your-harbor-host:1337
+# Test health check directly on root path
+curl http://your-harbor-host:1337/
 
 # Expected responses:
 # HTTP 200 - All Harbor components healthy
@@ -332,19 +334,18 @@ cd aio-harbor-registry-cache
 
 
 ## Registry Proxy Projects
-The script automatically creates proxy projects for major registries:
+The script automatically creates proxy projects for major registries. The behavior differs between CORE and REPLICA modes:
 
-### CORE Mode Endpoints:
-- Docker Hub: `https://hub.docker.com`
-- GitHub Container Registry: `https://ghcr.io`
-- Quay.io: `https://quay.io`
-- Google Container Registry: `https://gcr.io`
-- AWS Public ECR: `https://public.ecr.aws`
+- **CORE Mode**: Points directly to upstream registry endpoints
+- **REPLICA Mode**: Points to corresponding CORE Harbor proxy projects
 
-### REPLICA Mode Endpoints:
-- Docker Hub: `https://{CORE_HOSTNAME}/proxy-docker-io`
-- GitHub Container Registry: `https://{CORE_HOSTNAME}/proxy-ghcr-io`
-- Quay.io: `https://{CORE_HOSTNAME}/proxy-quay-io`
-- Google Container Registry: `https://{CORE_HOSTNAME}/proxy-gcr-io`
-- AWS Public ECR: `https://{CORE_HOSTNAME}/proxy-public-ecr-aws`
+| Registry | CORE Mode Endpoint | REPLICA Mode Endpoint | Project Name |
+|----------|-------------------|----------------------|--------------|
+| Docker Hub | `https://registry-1.docker.io` | `https://{CORE_HOSTNAME}/proxy-docker-io` | `proxy-docker-io` |
+| GitHub Container Registry | `https://ghcr.io` | `https://{CORE_HOSTNAME}/proxy-ghcr-io` | `proxy-ghcr-io` |
+| Quay.io | `https://quay.io` | `https://{CORE_HOSTNAME}/proxy-quay-io` | `proxy-quay-io` |
+| Google Container Registry | `https://gcr.io` | `https://{CORE_HOSTNAME}/proxy-gcr-io` | `proxy-gcr-io` |
+| AWS Public ECR | `https://public.ecr.aws` | `https://{CORE_HOSTNAME}/proxy-public-ecr-aws` | `proxy-public-ecr-aws` |
+| Microsoft Container Registry | `https://mcr.microsoft.com` | `https://{CORE_HOSTNAME}/proxy-mcr-microsoft-com` | `proxy-mcr-microsoft-com` |
+| Kubernetes Registry | `https://registry.k8s.io` | `https://{CORE_HOSTNAME}/proxy-registry-k8s-io` | `proxy-registry-k8s-io` |
 
