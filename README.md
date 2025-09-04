@@ -36,9 +36,11 @@ graph TB
     end
     
     Upstream -.->|Direct Connection| Core
-    Core -.->|Tiered Caching| Replica
+    Replica -->|DNS Lookup for Healthy CORE| Route53
+    Route53 -->|Returns Healthy CORE IPs| Replica
+    Replica -.->|Tiered Caching| Core
     Users -->|DNS Lookup| Route53
-    Route53 -->|Returns Healthy IPs| Users
+    Route53 -->|Returns Healthy REPLICA IPs| Users
     Users -->|Image Pulls| Replica
     WarmUp -.->|Optional<br/>Pre-populate Cache| Core
     Route53 -.->|Health Monitoring| Core
