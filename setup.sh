@@ -224,13 +224,22 @@ NGINX_MODE=${NGINX_MODE,,}
 echo "Running NGINX in $NGINX_MODE mode"
 
 # Base command arguments that are always present
-DOCKER_ARGS="-d --name nginx-redirect --network harbor_harbor -p 80:80 -p 443:443 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro -v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro -v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
+DOCKER_ARGS=(
+  -d
+  --name nginx-redirect
+  --network harbor_harbor
+  -p 80:80
+  -p 443:443
+  -v "$NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro"
+  -v "$NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro"
+  -v "$(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
+)
 
 # Conditionally add the REPLICA_CONFIG environment variable
 if [ "$NGINX_MODE" = "replica" ]; then
   echo "Replica mode detected, enabling REPLICA_CONFIG."
-  # Add the -e flag with its value to the arguments
-  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)"
+  # Add the -e flag and the file content as two separate elements to the array
+  DOCKER_ARGS+=(-e "REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)")
 fi
 
 # Execute the final docker run command
