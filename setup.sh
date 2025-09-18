@@ -231,13 +231,13 @@ DOCKER_ARGS="-d \
 -p 443:443 \
 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
 -v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro \
--v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
+-v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro
 
 # Conditionally add the REPLICA_CONFIG environment variable
 if [ "$NGINX_MODE" = "replica" ]; then
-  echo "Replica mode detected, enabling V2_TOGGLE."
+  echo "Replica mode detected, enabling REPLICA_CONFIG."
   # Add the -e flag with its value to the arguments
-  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)"
+  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG="$(cat $(pwd)/nginx-configs/replica.conf)"
 fi
 
 # Execute the final docker run command
