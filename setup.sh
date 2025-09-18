@@ -217,25 +217,39 @@ docker ps -a
 
 cd ..
 
+
+
+# Convert NGINX_MODE to lowercase for consistent comparison
 NGINX_MODE=${NGINX_MODE,,}
 echo "Running NGINX in $NGINX_MODE mode"
-docker run -d \
+
+# Base command arguments that are always present
+DOCKER_ARGS="-d \
 --name nginx-redirect \
 --network harbor_harbor \
 -p 80:80 \
 -p 443:443 \
 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
 -v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro \
--v $(pwd)/nginx-base.conf:/etc/nginx/nginx-base.conf:ro \
--v $(pwd)/nginx-$NGINX_MODE-consolidated.conf:/etc/nginx/conf.d/default.conf:ro \
-nginx:mainline-alpine@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8
+-v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
+
+# Conditionally add the REPLICA_CONFIG environment variable
+if [ "$NGINX_MODE" = "replica" ]; then
+  echo "Replica mode detected, enabling V2_TOGGLE."
+  # Add the -e flag with its value to the arguments
+  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)"
+fi
+
+# Execute the final docker run command
+# The quotes around "$DOCKER_ARGS" are important to handle spaces correctly
+docker run $DOCKER_ARGS nginx:mainline-alpine@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8
 
 
 docker run -d \
 --name harbor-health-check \
 -p 1337:1337 \
 --add-host=host.docker.internal:host-gateway \
--v $(pwd)/health-check.py:/app/health-check.py:ro \
+-v $(pwd)/health-check/health-check.py:/app/health-check.py:ro \
 python:3-alpine@sha256:9ba6d8cbebf0fb6546ae71f2a1c14f6ffd2fdab83af7fa5669734ef30ad48844 sh -c 'cd /app && python health-check.py'
 
 echo ""
