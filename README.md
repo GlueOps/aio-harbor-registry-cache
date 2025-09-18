@@ -116,7 +116,7 @@ graph TB
     
     subgraph "REPLICA Harbor Node"
         Client[Client Request<br/>replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest]
-        Nginx[Nginx Proxy<br/>Path Rewriting<br/>443 → 8443<br/><br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>:8443/proxy-docker-io/proxy-docker-io/nginx:latest]
+        Nginx[Nginx Proxy<br/>Path Rewriting/Proxying<br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>/proxy-docker-io/proxy-docker-io/nginx:latest]
         Harbor[Harbor Replica<br/>:8443]
         HealthCheck[Health Check Service<br/>:1337<br/>Monitors Harbor Health]
         Storage[(Data Volume<br/>14-day cache<br/>⚠️ Rebuilt on updates)]
@@ -173,7 +173,7 @@ Each Harbor deployment includes an Nginx proxy that serves multiple critical fun
 
 - **TLS Termination**: Handles TLS 1.3 encryption and modern security headers
 - **Port Translation**: Proxies from standard HTTPS port 443 to Harbor's 8443
-- **Path Rewriting** (REPLICA only): Transforms client requests to match Harbor's proxy project structure
+- **Path Rewriting & Proxying** (REPLICA only): Transforms client requests to match Harbor's proxy project structure and does a Proxy to Harbor
 - **HTTP to HTTPS Redirect**: Ensures all traffic is encrypted
 
 #### REPLICA Path Rewriting Example
@@ -185,7 +185,7 @@ docker pull replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest
 
 Nginx Transformation:
 Input:  /proxy-docker-io/nginx:latest
-Output: :8443/proxy-docker-io/proxy-docker-io/nginx:latest
+Output: /proxy-docker-io/proxy-docker-io/nginx:latest
 ```
 
 This rewriting ensures that Harbor's `proxy-docker-io` project correctly receives requests with the expected path structure.
