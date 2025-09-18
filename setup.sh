@@ -240,6 +240,9 @@ if [ "$NGINX_MODE" = "replica" ]; then
   echo "Replica mode detected, enabling REPLICA_CONFIG."
   # Add the -e flag and the file content as two separate elements to the array
   DOCKER_ARGS+=(-e "REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)")
+else
+  echo "Non-replica mode detected, setting blank REPLICA_CONFIG."
+  DOCKER_ARGS+=(-e "REPLICA_CONFIG=")
 fi
 
 # Execute the final docker run command
