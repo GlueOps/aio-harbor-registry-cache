@@ -1,0 +1,39 @@
+# default.conf.template
+
+server {
+    listen 80;
+    server_name _;
+    return 307 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name _;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_tickets off;
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    proxy_headers_hash_max_size 2048;
+    proxy_headers_hash_bucket_size 256;
+
+    # The entire /v2/ location block is conditionally included or excluded
+    ${REPLICA_CONFIG}
+
+    location / {
+        proxy_pass https://nginx:8443/;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_request_buffering off;
+    }
+}
