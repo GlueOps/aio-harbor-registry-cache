@@ -230,7 +230,7 @@ DOCKER_ARGS="-d --name nginx-redirect --network harbor_harbor -p 80:80 -p 443:44
 if [ "$NGINX_MODE" = "replica" ]; then
   echo "Replica mode detected, enabling REPLICA_CONFIG."
   # Add the -e flag with its value to the arguments
-  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG="$(cat $(pwd)/nginx-configs/replica.conf)"
+  DOCKER_ARGS="$DOCKER_ARGS -e REPLICA_CONFIG=$(cat $(pwd)/nginx-configs/replica.conf)"
 fi
 
 # Execute the final docker run command
