@@ -8,7 +8,7 @@ sleep 5;
 #stop all containers except for codespace (this helps for local dev cycles)
 cd harbor
 sudo docker compose down || true
-sudo docker stop nginx-redirect || true
+sudo docker stop glueops-nginx-proxy || true
 sudo docker stop  harbor-health-check || true
 cd ..
 docker system prune -a -f

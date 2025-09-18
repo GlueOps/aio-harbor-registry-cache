@@ -226,7 +226,7 @@ echo "Running NGINX in $NGINX_MODE mode"
 # Base command arguments that are always present
 DOCKER_ARGS=(
   -d
-  --name nginx-redirect
+  --name glueops-nginx-proxy
   --network harbor_harbor
   -p 80:80
   -p 443:443
