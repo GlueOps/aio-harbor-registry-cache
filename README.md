@@ -116,7 +116,7 @@ graph TB
     
     subgraph "REPLICA Harbor Node"
         Client[Client Request<br/>replica-1.mirror.gpkg.io/proxy-docker-io/nginx:latest]
-        Nginx[Nginx Proxy<br/>Path Rewriting/Proxying<br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>/proxy-docker-io/proxy-docker-io/nginx:latest]
+        Nginx[Nginx Proxy<br/>Path Rewriting/Proxying<br/><br/>🔄 /proxy-docker-io/nginx:latest<br/>↓<br/>/proxy-docker-io/proxy-docker-io/nginx:latest]
         Harbor[Harbor Replica<br/>:8443]
         HealthCheck[Health Check Service<br/>:1337<br/>Monitors Harbor Health]
         Storage[(Data Volume<br/>14-day cache<br/>⚠️ Rebuilt on updates)]
