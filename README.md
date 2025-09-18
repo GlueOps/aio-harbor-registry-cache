@@ -172,7 +172,7 @@ Both CORE and REPLICA nodes follow an immutable deployment pattern:
 Each Harbor deployment includes an Nginx proxy that serves multiple critical functions:
 
 - **TLS Termination**: Handles TLS 1.3 encryption and modern security headers
-- **Port Translation**: Redirects from standard HTTPS port 443 to Harbor's 8443
+- **Port Translation**: Proxies from standard HTTPS port 443 to Harbor's 8443
 - **Path Rewriting** (REPLICA only): Transforms client requests to match Harbor's proxy project structure
 - **HTTP to HTTPS Redirect**: Ensures all traffic is encrypted
 
@@ -230,9 +230,9 @@ All TCP ports must be open for proper operation:
 
 | Port | Service | Purpose | Accessibility |
 |------|---------|---------|---------------|
-| 80 | Nginx HTTP | HTTP traffic (redirects to 8443 via 443) | External |
-| 443 | Nginx HTTPS | HTTPS traffic (redirects to 8443) | External |
-| 8080 | Harbor HTTP | Harbor internal HTTP (redirects to 8443) | Internal |
+| 80 | Nginx HTTP | HTTP traffic (Proxy to 8443 via 443) | External |
+| 443 | Nginx HTTPS | HTTPS traffic (Proxy to 8443) | External |
+| 8080 | Harbor HTTP | Harbor internal HTTP (Proxy to 8443) | Internal |
 | 8443 | Harbor HTTPS | **Main Harbor service endpoint** | Internal |
 | 1337 | Health Check | Route53 DNS health monitoring (infrastructure only) | External |
 
@@ -242,7 +242,7 @@ Client Request → Port 80/443 (Nginx) → Port 8443 (Harbor)
 Route53 Health Check → Port 1337 (Health Check Service) → Port 8443 (Harbor Health API)
 ```
 
-**Note**: Docker clients and Kubernetes automatically follow redirects, so requests to `replicas.mirror.gpkg.io` flow: `80/443 → 8443` for every image pull. Clients never interact with port 1337 - it's purely for DNS failover.
+**Note**: Docker clients and Kubernetes automatically follow redirects, so requests to `replicas.mirror.gpkg.io` flow: `80/443 → 443` for every image pull. Clients never interact with port 1337 - it's purely for DNS failover.
 
 ## Health Check Service (Port 1337)
 
