@@ -22,7 +22,7 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
 
     # The entire /v2/ location block is conditionally included or excluded
-    ${V2_TOGGLE}
+    ${REPLICA_CONFIG}
 
     location / {
         proxy_pass https://nginx:8443/;
