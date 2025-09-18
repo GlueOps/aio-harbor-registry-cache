@@ -224,14 +224,7 @@ NGINX_MODE=${NGINX_MODE,,}
 echo "Running NGINX in $NGINX_MODE mode"
 
 # Base command arguments that are always present
-DOCKER_ARGS="-d \
---name nginx-redirect \
---network harbor_harbor \
--p 80:80 \
--p 443:443 \
--v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro \
--v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro \
--v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+DOCKER_ARGS="-d --name nginx-redirect --network harbor_harbor -p 80:80 -p 443:443 -v $NGINX_CERT_LOCATION:/etc/nginx/ssl/cert.pem:ro -v $NGINX_KEY_LOCATION:/etc/nginx/ssl/key.pem:ro -v $(pwd)/nginx-configs/default.conf.template:/etc/nginx/templates/default.conf.template:ro"
 
 # Conditionally add the REPLICA_CONFIG environment variable
 if [ "$NGINX_MODE" = "replica" ]; then
