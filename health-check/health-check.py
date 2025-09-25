@@ -51,7 +51,7 @@ class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
         pass
 
 if __name__ == "__main__":
-    with socketserver.TCPServer(("", PORT), HealthCheckHandler) as httpd:
+    with socketserver.ThreadingTCPServer(("", PORT), HealthCheckHandler) as httpd:
         print(f"Health check server running on port {PORT}")
         try:
             httpd.serve_forever()
